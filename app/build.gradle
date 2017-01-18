@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.antfortune.freeline'//阿里增量编译
+android {
+    compileSdkVersion project.COMPILE_SDK_VERSION as int
+    buildToolsVersion project.TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion project.MIN_SDK_VERSION as int
+        targetSdkVersion project.TARGET_SDK_VERSION
+        applicationId "com.march.iwant"
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    freeline {
+        hack true
+        applicationProxy false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //design
+    compile rootProject.ext.support.design
+    // appcompat
+    compile rootProject.ext.support.appcompat_v7
+    // dev
+    compile(rootProject.ext.support.lib_dev, {
+        exclude group: 'com.android.support', module: ['support-annotations', 'appcompat-v7', 'recyclerview-v7']
+    })
+    // jsoup
+    compile rootProject.ext.support.jsoup
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+repositories {
+    mavenCentral()
+}

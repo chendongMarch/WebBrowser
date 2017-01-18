@@ -1,0 +1,26 @@
+apply from: 'dependence.gradle'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    ext.kotlin_version = '1.0.6'
+    ext.freeline_version = '0.8.5'
+    dependencies {
+        classpath "com.antfortune.freeline:gradle:$freeline_version"
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url 'https://dl.bintray.com/chendongmarch/maven'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
