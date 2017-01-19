@@ -40,6 +40,29 @@ dependencies {
     })
     // jsoup
     compile rootProject.ext.support.jsoup
+    // task
+    compile rootProject.ext.support.blots
+    // glide
+    compile rootProject.ext.support.glide
+
+    // retrofit
+    compile rootProject.ext.support.net_retrofit
+    // 调试
+    compile rootProject.ext.support.net_stetho
+    // 调试
+    compile rootProject.ext.support.net_stetho_okhttp3
+    // 日志
+    compile rootProject.ext.support.net_logging
+    // gson 转化适配
+    compile rootProject.ext.support.net_gson_converter
+    // rxjava 转化适配
+    compile rootProject.ext.support.net_rxjava2_adapter
+    // rxjava
+    compile rootProject.ext.support.rxjava2
+    // rxandroid
+    compile rootProject.ext.support.rxandroid
+
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {
