@@ -1,4 +1,4 @@
-package com.march.iwant
+package com.march.iwant.pz
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,9 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.march.dev.uikit.SimpleWebViewActivity
 import com.march.dev.utils.CheckUtils
-import com.march.iwant.model.PzDataModel
+import com.march.iwant.R
+import com.march.iwant.base.BaseCrawlerActivity
+import com.march.iwant.pz.model.PzDataModel
 import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
@@ -19,15 +21,14 @@ import org.jsoup.Jsoup
  */
 internal class PzActivity : BaseCrawlerActivity<PzDataModel>() {
 
-    companion object {
-        private val BASE_URL = "http://www.jcodecraeer.com/plus/list.php?tid=18&TotalResult=1751&PageNo="
-    }
-
     private var mPageNum = 1
 
+    companion object {
+        private val BASE_URL = "http://www.jcodecraeer.com/plus/list.php?tid=16&PageNo="
+    }
 
     override fun getLayoutId(): Int {
-        return R.layout.activity_jsoup
+        return R.layout.pz_activity
     }
 
 
@@ -70,7 +71,7 @@ internal class PzActivity : BaseCrawlerActivity<PzDataModel>() {
     }
 
     override fun getAdapterLayoutId(): Int {
-        return R.layout.item_jsoup
+        return R.layout.pz_item_list
     }
 
 

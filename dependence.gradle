@@ -19,7 +19,7 @@ ext {
             butterknife840          : 'com.jakewharton:butterknife:8.4.0',
             butterknife840_processor: 'com.jakewharton:butterknife-compiler:8.4.0',
             //数据库
-            greendao                : 'org.greenrobot:greendao:2.2.0',
+            greendao                : 'org.greenrobot:greendao:3.2.0',
             //流式标签
             flowlayout              : 'com.zhy:flowlayout-lib:1.0.3',
             //图片加载
@@ -33,7 +33,7 @@ ext {
             // adapter
             lib_adapter             : 'com.march.lib-adapter:lib-adapter:1.0.3-beta4',
             // develop
-            lib_dev                 : 'com.march.lib-dev:lib-dev:0.0.1-beta5',
+            lib_dev                 : 'com.march.lib-dev:lib-dev:0.0.1-beta6',
             // jsoup
             jsoup                   : 'org.jsoup:jsoup:1.10.2',
 

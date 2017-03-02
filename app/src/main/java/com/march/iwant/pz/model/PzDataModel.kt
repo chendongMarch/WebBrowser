@@ -1,4 +1,4 @@
-package com.march.iwant.model
+package com.march.iwant.pz.model
 
 /**
  *  CreateAt : 2017/1/19

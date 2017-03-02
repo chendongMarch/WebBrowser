@@ -5,10 +5,13 @@ buildscript {
     }
     ext.kotlin_version = '1.0.6'
     ext.freeline_version = '0.8.5'
+    ext.greendao_version = '3.2.1'
+    ext.gradle_version = '2.2.3'
     dependencies {
         classpath "com.antfortune.freeline:gradle:$freeline_version"
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath "com.android.tools.build:gradle:$gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.greenrobot:greendao-gradle-plugin:$greendao_version"
     }
 }
 
@@ -18,6 +21,7 @@ allprojects {
         maven {
             url 'https://dl.bintray.com/chendongmarch/maven'
         }
+        maven { url "https://jitpack.io" }
     }
 }
 

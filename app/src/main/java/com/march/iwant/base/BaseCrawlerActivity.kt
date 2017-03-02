@@ -1,4 +1,4 @@
-package com.march.iwant
+package com.march.iwant.base
 
 import android.content.Context
 import android.os.Bundle
@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import bolts.Continuation
 import bolts.Task
-import com.march.dev.app.activity.BaseActivity
 import com.march.dev.helper.LinerDividerDecoration
 import com.march.dev.helper.Toaster
 import com.march.dev.utils.ActivityAnimUtils
 import com.march.dev.utils.NetUtils
+import com.march.iwant.R
 import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
@@ -24,30 +24,34 @@ import java.util.concurrent.Callable
 
 /**
  * CreateAt : 2017/1/16
- * Describe :
-
+ * Describe : 网页爬取数据的基类
  * @author chendong
  */
-abstract class BaseCrawlerActivity<D> : BaseActivity() {
+abstract class BaseCrawlerActivity<D> : IWantActivity() {
 
     lateinit var mDatas: MutableList<D>
     lateinit var mAdapter: SimpleRvAdapter<D>
     lateinit var mRv: RecyclerView
 
 
-
     override fun onInitDatas() {
         super.onInitDatas()
         mDatas = ArrayList<D>()
-        mRv = findViewById(R.id.rv) as RecyclerView
+        mRv = findViewById(R.id.clawler_rv) as RecyclerView
     }
 
 
     override fun onInitViews(view: View?, saveData: Bundle?) {
         super.onInitViews(view, saveData)
-        mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
-        LinerDividerDecoration.attachRecyclerView(mRv)
+        if (!initRecyclerView()) {
+            mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            LinerDividerDecoration.attachRecyclerView(mRv)
+        }
         createAdapter()
+    }
+
+    open fun initRecyclerView(): Boolean {
+        return false
     }
 
     // 创建adapter
@@ -107,14 +111,14 @@ abstract class BaseCrawlerActivity<D> : BaseActivity() {
 
     protected abstract fun onBindDataShow(holder: BaseViewHolder<D>, data: D, pos: Int, type: Int)
 
-    protected abstract fun getItemListener():SimpleItemListener<D>
+    protected abstract fun getItemListener(): SimpleItemListener<D>
 
     protected abstract fun getLoadMoreListener(): OnLoadMoreListener
 
     @Throws(Exception::class)
     protected abstract fun crawler()
 
-    protected abstract fun getAdapterLayoutId():Int
+    protected abstract fun getAdapterLayoutId(): Int
 
     override fun finish() {
         super.finish()

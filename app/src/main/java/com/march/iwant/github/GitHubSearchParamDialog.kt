@@ -1,4 +1,4 @@
-package com.march.iwant
+package com.march.iwant.github
 
 import android.content.Context
 import android.view.Gravity
@@ -8,6 +8,9 @@ import android.widget.EditText
 import android.widget.Spinner
 import com.march.dev.app.dialog.BaseDialog
 import com.march.dev.utils.CheckUtils
+import com.march.iwant.R
+import com.march.iwant.common.utils.IWantCommonUtils
+import com.march.iwant.github.model.GitHubSearchParam
 
 
 /**
@@ -15,25 +18,19 @@ import com.march.dev.utils.CheckUtils
  * Describe : 选择github搜索条件的dialog
  * @author chendong
  */
-class GitHubSearchDialog(context: Context) : BaseDialog(context) {
+class GitHubSearchParamDialog(context: Context) : BaseDialog(context) {
 
     private lateinit var mSpinner: Spinner
     private lateinit var mEt: EditText
-    private lateinit var datas: MutableList<SortType>
-    private lateinit var listener: OnChooseSearchListener
-
-    internal inner class SortType(var sortType: String, var display: String) {
-        override fun toString(): String {
-            return display
-        }
-    }
+    private lateinit var mDatas: MutableList<String>
+    private lateinit var mListener: OnChooseSearchListener
 
     interface OnChooseSearchListener {
-        fun onChoose(sort: String, query: String)
+        fun onChoose(sortType: String, queryKeyWds: String)
     }
 
     fun setListener(listener: OnChooseSearchListener) {
-        this.listener = listener
+        this.mListener = listener
     }
 
     override fun initViews() {
@@ -41,12 +38,17 @@ class GitHubSearchDialog(context: Context) : BaseDialog(context) {
 
         mEt = getView<EditText>(R.id.et)
         mSpinner = getView(R.id.spinner)
-        datas = arrayListOf()
-        datas.add(SortType(GitHubSearchActivity.SORT_BY_FORK, "Fork数排序"))
-        datas.add(SortType(GitHubSearchActivity.SORT_BY_STAR, "Star数排序"))
-        datas.add(SortType(GitHubSearchActivity.SORT_BY_MACTH, "名称相近数排序"))
-        datas.add(SortType(GitHubSearchActivity.SORT_BY_UPDATE, "最近更新数排序"))
-        mSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, android.R.id.text1, datas)
+        mDatas = arrayListOf()
+        mDatas.add(GitHubSearchParam.SORT_BY_FORK)
+        mDatas.add(GitHubSearchParam.SORT_BY_STAR)
+        mDatas.add(GitHubSearchParam.SORT_BY_MACTH)
+        mDatas.add(GitHubSearchParam.SORT_BY_UPDATE)
+
+        val dataShowList: MutableList<String> = arrayListOf()
+        mDatas.map {
+            dataShowList.add(IWantCommonUtils.getGitHubSortTypeShow(it))
+        }
+        mSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, android.R.id.text1, dataShowList)
     }
 
 
@@ -54,9 +56,9 @@ class GitHubSearchDialog(context: Context) : BaseDialog(context) {
         when (view!!.id) {
             R.id.tv_cancel -> dismiss()
             R.id.tv_confirm -> {
-                val trim = mEt.text.toString().trim { it <= ' ' }
+                val trim = mEt.text.toString().trim()
                 if (!CheckUtils.isEmpty(trim)) {
-                    listener.onChoose(datas[mSpinner.selectedItemPosition].sortType, trim)
+                    mListener.onChoose(mDatas[mSpinner.selectedItemPosition], trim)
                 }
                 dismiss()
             }
@@ -65,7 +67,7 @@ class GitHubSearchDialog(context: Context) : BaseDialog(context) {
 
 
     override fun getLayoutId(): Int {
-        return R.layout.dialog_github
+        return R.layout.github_search_param_dialog
     }
 
     override fun setWindowParams() {

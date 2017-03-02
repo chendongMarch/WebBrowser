@@ -1,10 +1,14 @@
-package com.march.iwant
+package com.march.iwant.github
 
 import android.os.Bundle
 import android.view.View
 import com.march.dev.helper.Logger
 import com.march.dev.uikit.SimpleWebViewActivity
 import com.march.dev.widget.TitleBarView
+import com.march.iwant.R
+import com.march.iwant.base.BaseCrawlerActivity
+import com.march.iwant.github.model.GitHubDataModel
+import com.march.iwant.github.model.GitHubSearchParam
 import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
@@ -15,21 +19,26 @@ import org.jsoup.Jsoup
  * Describe : 搜索GitHub项目
  * @author chendong
  */
-internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubSearchActivity.GitHubData>() {
+internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubDataModel>() {
 
-    private lateinit var mQuery: SearchQuery
+    companion object {
+        val BASE_URL = "https://github.com"
+    }
+
+    private lateinit var mQueryParam: GitHubSearchParam
+
     // lazy 使用时才创建
-    private val mGitHubDialog: GitHubSearchDialog by lazy {
-        val dialog: GitHubSearchDialog = GitHubSearchDialog(mContext)
-        dialog.setListener(object : GitHubSearchDialog.OnChooseSearchListener {
-            override fun onChoose(sort: String, query: String) {
-                if (mQuery.s == sort && mQuery.q == query) {
+    private val mGitHubDialog: GitHubSearchParamDialog by lazy {
+        val dialog: GitHubSearchParamDialog = GitHubSearchParamDialog(mContext)
+        dialog.setListener(object : GitHubSearchParamDialog.OnChooseSearchListener {
+            override fun onChoose(sortType: String, queryKeyWds: String) {
+                if (mQueryParam.s == sortType && mQueryParam.q == queryKeyWds) {
                     return
                 }
                 if (startCrawlerTask()) {
-                    mQuery.s = sort
-                    mQuery.q = query
-                    mQuery.p = 1
+                    mQueryParam.s = sortType
+                    mQueryParam.q = queryKeyWds
+                    mQueryParam.p = 1
                     mDatas.clear()
                     mAdapter.notifyDataSetChanged(mDatas, true)
                     mAdapter.refreshPreDataCount()
@@ -40,20 +49,13 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubSearchActivity.G
         dialog
     }
 
-    internal inner class SearchQuery {
-        var l = "java"//l 语言
-        var s = "stars"//s 排序条件
-        var q = "adapter"//q 查找
-        var p = 1//p page
-    }
-
     override fun getLayoutId(): Int {
-        return R.layout.activity_github
+        return R.layout.github_activity
     }
 
     override fun onInitDatas() {
         super.onInitDatas()
-        mQuery = SearchQuery()
+        mQueryParam = GitHubSearchParam()
     }
 
 
@@ -68,16 +70,16 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubSearchActivity.G
 
     private fun generateUrl(): String {
         val sb = StringBuilder("https://github.com/search?")
-        sb.append("l=").append(mQuery.l)
-        sb.append("&q=").append(mQuery.q)
-        sb.append("&s=").append(mQuery.s)
-        sb.append("&p=").append(mQuery.p)
+        sb.append("l=").append(mQueryParam.l)
+        sb.append("&q=").append(mQueryParam.q)
+        sb.append("&s=").append(mQueryParam.s)
+        sb.append("&p=").append(mQueryParam.p)
         sb.append("&o=desc&type=Repositories&utf8=%E2%9C%93")
         return sb.toString()
     }
 
 
-    override fun onBindDataShow(holder: BaseViewHolder<GitHubData>, data: GitHubData, pos: Int, type: Int) {
+    override fun onBindDataShow(holder: BaseViewHolder<GitHubDataModel>, data: GitHubDataModel, pos: Int, type: Int) {
         holder.setText(R.id.tv_title, data.title)
                 .setText(R.id.tv_desc, data.desc)
                 .setText(R.id.tv_lang, "lang:" + data.language)
@@ -105,15 +107,15 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubSearchActivity.G
             val starNum = getTextIfExist(element.getElementsByAttributeValue("aria-label", "Stargazers"), "0")
             val forkNum = getTextIfExist(element.getElementsByAttributeValue("aria-label", "Forks"), "0")
             val time = element.getElementsByTag("relative-time").attr("datetime")
-            val data = GitHubData(aNode.text(), BASE_URL + aNode.attr("href"), desc, time, starNum, forkNum, lang)
+            val data = GitHubDataModel(aNode.text(), BASE_URL + aNode.attr("href"), desc, time, starNum, forkNum, lang)
             mDatas.add(data)
         }
     }
 
 
-    override fun getItemListener(): SimpleItemListener<GitHubData> {
-        return object : SimpleItemListener<GitHubData>() {
-            override fun onClick(pos: Int, holder: BaseViewHolder<*>?, data: GitHubData?) {
+    override fun getItemListener(): SimpleItemListener<GitHubDataModel> {
+        return object : SimpleItemListener<GitHubDataModel>() {
+            override fun onClick(pos: Int, holder: BaseViewHolder<*>?, data: GitHubDataModel?) {
                 SimpleWebViewActivity.loadUrl(mActivity, data!!.link)
             }
         }
@@ -122,25 +124,14 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubSearchActivity.G
     override fun getLoadMoreListener(): OnLoadMoreListener {
         return OnLoadMoreListener {
             mRv.postDelayed({
-                mQuery.p++
+                mQueryParam.p++
                 startCrawlerTask()
             }, 2000)
         }
     }
 
     override fun getAdapterLayoutId(): Int {
-        return R.layout.item_github
+        return R.layout.github_item_list
     }
 
-    internal inner class GitHubData(var title: String, var link: String, var desc: String, var time: String, var starNum: String, var forkNum: String, var language: String)
-
-    companion object {
-
-        val SORT_BY_UPDATE = "updated"
-        val SORT_BY_FORK = "forks"
-        val SORT_BY_STAR = "stars"
-        val SORT_BY_MACTH = ""
-
-        val BASE_URL = "https://github.com"
-    }
 }
