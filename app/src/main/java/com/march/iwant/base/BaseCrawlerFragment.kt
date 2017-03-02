@@ -40,14 +40,14 @@ abstract class BaseCrawlerFragment<D> : IWantFragment() {
     override fun onInitViews(view: View?, saveData: Bundle?) {
         super.onInitViews(view, saveData)
         mRv = view?.findViewById(R.id.clawler_rv) as RecyclerView
-        if (!initRecyclerView()) {
+        if (!isLinearLayoutManager()) {
             mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             LinerDividerDecoration.attachRecyclerView(mRv)
         }
         createAdapter()
     }
 
-    open fun initRecyclerView(): Boolean {
+    open fun isLinearLayoutManager(): Boolean {
         return false
     }
 
@@ -79,7 +79,6 @@ abstract class BaseCrawlerFragment<D> : IWantFragment() {
             Toaster.get().show(mContext, "网络不给力哦")
             return false
         }
-
         Task.callInBackground(Callable <Any> {
             crawler()
         }).continueWith(Continuation <Any, Any> {
