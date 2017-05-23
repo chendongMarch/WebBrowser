@@ -44,6 +44,7 @@ abstract class BaseCrawlerFragment<D> : IWantFragment() {
             mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             LinerDividerDecoration.attachRecyclerView(mRv)
         }
+
         createAdapter()
     }
 
@@ -53,6 +54,7 @@ abstract class BaseCrawlerFragment<D> : IWantFragment() {
 
     // 创建adapter
     private fun createAdapter() {
+
         // object: 声明内部类
         mAdapter = object : SimpleRvAdapter<D>(mContext, mDatas, getAdapterLayoutId()) {
             override fun onBindView(holder: BaseViewHolder<D>, data: D, pos: Int, type: Int) {

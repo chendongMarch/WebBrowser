@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".home.HomeActivity">
+        <activity android:name=".home.HomePageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -23,8 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".github.GitHubSearchActivity"/>
-        <activity android:name=".pz.PzActivity"/>
-        <activity android:name=".xxxiao.XiaoAlbumActivity"/>
+        <activity android:name=".pz.PzHomeActivity"/>
+        <activity android:name=".runoob.RunoobActivity"/>
+        <activity android:name=".xxxiao.XiaoHomeActivity"/>
         <activity android:name=".xxxiao.XiaoDetailActivity"/>
         <activity android:name=".scanimg.ScanImgListActivity"/>
     </application>

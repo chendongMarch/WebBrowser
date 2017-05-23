@@ -20,6 +20,7 @@ import com.march.dev.widget.LeProgressView
 import com.march.iwant.R
 import com.march.iwant.base.IWantActivity
 import com.march.iwant.common.Constant
+import com.march.iwant.common.IntentKeys
 import com.march.iwant.common.utils.IWantImageUtils
 import kotlinx.android.synthetic.main.scan_img_list_activity.*
 import uk.co.senab.photoview.PhotoView
@@ -36,7 +37,7 @@ class ScanImgListActivity : IWantActivity() {
 
     private var mPos: Int = 0
     private val mDetailList: MutableList<Scanable> by lazy {
-        intent.getParcelableArrayListExtra<Scanable>(Constant.KEY_LIST)
+        intent.getParcelableArrayListExtra<Scanable>(IntentKeys.KEY_LIST)
     }
     private val mCachePhotoView: SparseArrayCompat<PhotoView> by lazy {
         SparseArrayCompat<PhotoView>()
@@ -58,7 +59,7 @@ class ScanImgListActivity : IWantActivity() {
 
     override fun onInitViews(view: View?, save: Bundle?) {
         super.onInitViews(view, save)
-        mPos = intent.getIntExtra(Constant.KEY_POS, 0)
+        mPos = intent.getIntExtra(IntentKeys.KEY_POS, 0)
         updateCenterText()
         registerClickListener(R.id.back_tv, R.id.right_tv)
         mImgListVp.adapter = ImgListPagerAdapter()
@@ -252,8 +253,8 @@ class ScanImgListActivity : IWantActivity() {
             val intent = Intent(activity, ScanImgListActivity::class.java)
             val details = ArrayList<Scanable>()
             details.addAll(detail)
-            intent.putExtra(Constant.KEY_LIST, details)
-            intent.putExtra(Constant.KEY_POS, pos)
+            intent.putExtra(IntentKeys.KEY_LIST, details)
+            intent.putExtra(IntentKeys.KEY_POS, pos)
             activity.startActivity(intent)
             ActivityAnimUtils.translateStart(activity)
         }

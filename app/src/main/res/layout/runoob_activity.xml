@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:focusable="true"
+             android:focusableInTouchMode="true"
+             android:orientation="vertical">
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:background="@color/white"
+        android:overScrollMode="never"
+        android:id="@+id/clawler_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="50dp"/>
+    <LinearLayout
+        android:id="@+id/mTopLL"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <EditText
+            android:text="android"
+            android:id="@+id/mSearchEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="在 runoob.com 搜索"
+            android:padding="10dp"
+            />
+    </LinearLayout>
+</FrameLayout>

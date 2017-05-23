@@ -8,6 +8,7 @@ import android.view.View
 import bolts.Continuation
 import bolts.Task
 import com.march.dev.helper.LinerDividerDecoration
+import com.march.dev.helper.Logger
 import com.march.dev.helper.Toaster
 import com.march.dev.utils.ActivityAnimUtils
 import com.march.dev.utils.NetUtils
@@ -16,7 +17,6 @@ import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
 import com.march.lib.adapter.core.SimpleRvAdapter
-import com.march.lib.adapter.module.HFModule
 import com.march.lib.adapter.module.LoadMoreModule
 import org.jsoup.select.Elements
 import java.util.*
@@ -32,6 +32,7 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
     lateinit var mDatas: MutableList<D>
     lateinit var mAdapter: SimpleRvAdapter<D>
     lateinit var mRv: RecyclerView
+    var isLoadOver = false
 
 
     override fun onInitDatas() {
@@ -40,14 +41,26 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
         mRv = findViewById(R.id.clawler_rv) as RecyclerView
     }
 
+    class MyLinearLayoutManager(context: Context, orientation: Int, reverse: Boolean)
+        : LinearLayoutManager(context, orientation, reverse) {
+        override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+            try {
+                super.onLayoutChildren(recycler, state)
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 
     override fun onInitViews(view: View?, saveData: Bundle?) {
         super.onInitViews(view, saveData)
         if (!initRecyclerView()) {
-            mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            mRv.layoutManager = MyLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             LinerDividerDecoration.attachRecyclerView(mRv)
         }
-        createAdapter()
+        mRv.post {
+            createAdapter()
+        }
     }
 
     open fun initRecyclerView(): Boolean {
@@ -61,12 +74,21 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
             override fun onBindView(holder: BaseViewHolder<D>, data: D, pos: Int, type: Int) {
                 onBindDataShow(holder, data, pos, type)
             }
+
+            override fun onBindHeader(header: BaseViewHolder<D>?) {
+
+            }
         }
         mAdapter.addLoadMoreModule(LoadMoreModule(3, getLoadMoreListener()))
         mAdapter.setItemListener(getItemListener())
-        mAdapter.addHFModule(HFModule(mContext, HFModule.NO_RES, R.layout.common_load_more, mRv))
-        mAdapter.hfModule.setFooterEnable(false)
+//        mAdapter.addHFModule(HFModule(mContext, HFModule.NO_RES, R.layout.common_load_more, mRv))
+//        mAdapter.hfModule.setFooterEnable(false)
+        setUpAdapter()
         mRv.adapter = mAdapter
+    }
+
+    open fun setUpAdapter() {
+
     }
 
 
@@ -82,7 +104,9 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
         return defaultStr
     }
 
+
     protected fun startCrawlerTask(): Boolean {
+        if (isLoadOver) return false
         if (!NetUtils.isNetworkConnected(mContext)) {
             mAdapter.loadMoreModule.finishLoad()
             Toaster.get().show(mContext, "网络不给力哦")
@@ -94,6 +118,7 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
         }).continueWith(Continuation <Any, Any> {
             task ->
             if (task.error != null) {
+                Logger.e("chendong", task.error)
                 mAdapter.loadMoreModule.finishLoad()
                 Toaster.get().show(mContext, "加载失败，请稍候")
             } else {
@@ -104,8 +129,10 @@ abstract class BaseCrawlerActivity<D> : IWantActivity() {
     }
 
     protected fun updateAdapter() {
-        mAdapter.loadMoreModule.finishLoad()
-        mAdapter.appendTailRangeData(mDatas, true)
+        mRv.post {
+            mAdapter.loadMoreModule.finishLoad()
+            mAdapter.appendTailRangeData(mDatas, true)
+        }
     }
 
 

@@ -6,9 +6,5 @@ package com.march.iwant.common
  *  @author chendong
  */
 class Constant {
-    companion object {
-        @JvmField val KEY_URL = "KEY_URL"
-        @JvmField val KEY_LIST = "KEY_LIST"
-        @JvmField val KEY_POS = "KEY_POS"
-    }
+
 }

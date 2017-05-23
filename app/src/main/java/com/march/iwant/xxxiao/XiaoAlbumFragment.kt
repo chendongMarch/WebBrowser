@@ -1,21 +1,17 @@
 package com.march.iwant.xxxiao
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.view.Gravity
-import android.view.View
 import android.widget.ImageView
+import com.march.dev.helper.Logger
 import com.march.dev.utils.DimensionUtils
-import com.march.dev.widget.TitleBarView
 import com.march.iwant.R
-import com.march.iwant.base.BaseCrawlerActivity
+import com.march.iwant.base.BaseCrawlerFragment
+import com.march.iwant.common.IntentKeys
 import com.march.iwant.common.utils.IWantImageUtils
 import com.march.iwant.xxxiao.model.XiaoAlbumDataModel
 import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
-import com.march.lib.adapter.core.SimpleRvAdapter
-import kotlinx.android.synthetic.main.xiao_album_activity.*
 import org.jsoup.Jsoup
 
 /**
@@ -23,32 +19,22 @@ import org.jsoup.Jsoup
  *  Describe : xxxiao数据爬取
  *  @author chendong
  */
-class XiaoAlbumActivity : BaseCrawlerActivity<XiaoAlbumDataModel>() {
+class XiaoAlbumFragment : BaseCrawlerFragment<XiaoAlbumDataModel>() {
+
+    private var mUrl: String? = ""
 
     companion object {
-        private val BASE_URL = "http://m.xxxiao.com/"
-    }
-
-    override fun onInitViews(view: View?, saveData: Bundle?) {
-        super.onInitViews(view, saveData)
-        mTitleView.setText("返回", "xxxiao", "选择")
-        mTitleView.setLeftBackListener(mActivity)
-        mTitleView.setListener(TitleBarView.RIGHT, {
-            mDrawerLy.openDrawer(Gravity.END, true)
-        })
-        mTitleView.attachRecyclerView(mRv)
-        mMenuRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
-        val menuList = arrayListOf("1", "2", "3")
-        mMenuRv.adapter = object : SimpleRvAdapter<String>(mContext, menuList, R.layout.xiao_menu_item_list) {
-            override fun onBindView(holder: BaseViewHolder<String>?, data: String?, pos: Int, type: Int) {
-
-            }
+        fun newInst(url: String): XiaoAlbumFragment {
+            val xiaoAlbumFragment = XiaoAlbumFragment()
+            val args = Bundle()
+            args.putString(IntentKeys.KEY_URL, url)
+            xiaoAlbumFragment.arguments = args
+            return xiaoAlbumFragment
         }
     }
 
-    override fun initRecyclerView(): Boolean {
-        mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
-        return true
+    override fun onInitIntent(intent: Bundle?) {
+        mUrl = intent?.getString(IntentKeys.KEY_URL)
     }
 
     override fun onBindDataShow(holder: BaseViewHolder<XiaoAlbumDataModel>, data: XiaoAlbumDataModel, pos: Int, type: Int) {
@@ -65,7 +51,7 @@ class XiaoAlbumActivity : BaseCrawlerActivity<XiaoAlbumDataModel>() {
     override fun getItemListener(): SimpleItemListener<XiaoAlbumDataModel> {
         return object : SimpleItemListener<XiaoAlbumDataModel>() {
             override fun onClick(pos: Int, holder: BaseViewHolder<*>, data: XiaoAlbumDataModel) {
-                XiaoDetailActivity.startXiaoDetailActivity(mActivity, data.linkUrl)
+                XiaoDetailActivity.startXiaoDetailActivity(activity, data.linkUrl)
             }
         }
     }
@@ -76,13 +62,19 @@ class XiaoAlbumActivity : BaseCrawlerActivity<XiaoAlbumDataModel>() {
         }
     }
 
+
+    override fun forceLoad(): Boolean {
+        return false
+    }
+
     override fun crawler() {
-        val document = Jsoup.connect(BASE_URL).get()
+        Logger.e("chendong",mUrl)
+        val document = Jsoup.connect(mUrl).get()
         val divPostThumbList = document.getElementsByClass("post-thumb")
         var data: XiaoAlbumDataModel
         divPostThumbList.map {
             data = XiaoAlbumDataModel()
-            data.pageUrl = BASE_URL
+            data.pageUrl = mUrl!!
             val aNodeList = it.getElementsByClass("thumb-link")
             if (aNodeList.size > 0) {
                 val aNode = aNodeList[0]
@@ -119,7 +111,7 @@ class XiaoAlbumActivity : BaseCrawlerActivity<XiaoAlbumDataModel>() {
     }
 
     override fun getLayoutId(): Int {
-        return R.layout.xiao_album_activity
+        return R.layout.xiao_album_fragment
     }
 
 }

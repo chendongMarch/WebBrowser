@@ -6,17 +6,18 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.march.dev.utils.ActivityAnimUtils
 import com.march.dev.utils.DimensionUtils
 import com.march.iwant.R
 import com.march.iwant.base.BaseCrawlerActivity
-import com.march.iwant.common.Constant
+import com.march.iwant.common.IntentKeys
+import com.march.iwant.common.utils.IWantImageUtils
 import com.march.iwant.scanimg.ScanImgListActivity
 import com.march.iwant.xxxiao.model.XiaoDetailDataModel
 import com.march.lib.adapter.common.OnLoadMoreListener
 import com.march.lib.adapter.common.SimpleItemListener
 import com.march.lib.adapter.core.BaseViewHolder
+import kotlinx.android.synthetic.main.xiao_detail_activity.*
 import org.jsoup.Jsoup
 
 /**
@@ -31,7 +32,7 @@ class XiaoDetailActivity : BaseCrawlerActivity<XiaoDetailDataModel>() {
     companion object {
         fun startXiaoDetailActivity(activity: Activity, url: String) {
             val intent = Intent(activity, XiaoDetailActivity::class.java)
-            intent.putExtra(Constant.KEY_URL, url)
+            intent.putExtra(IntentKeys.KEY_URL, url)
             activity.startActivity(intent)
             ActivityAnimUtils.translateStart(activity)
         }
@@ -43,22 +44,24 @@ class XiaoDetailActivity : BaseCrawlerActivity<XiaoDetailDataModel>() {
 
     override fun onInitDatas() {
         super.onInitDatas()
-        mUrl = intent.getStringExtra(Constant.KEY_URL)
+        mUrl = intent.getStringExtra(IntentKeys.KEY_URL)
     }
 
+    override fun isInitTitle(): Boolean {
+        return false
+    }
 
     override fun onInitViews(view: View?, saveData: Bundle?) {
         super.onInitViews(view, saveData)
-        mTitleBarView.setText("返回", "详情", null)
-        mTitleBarView.setLeftBackListener(mActivity)
+        mXiaoDetailTitleBarView.setText("返回", "详情", null)
+        mXiaoDetailTitleBarView.setLeftBackListener(mActivity)
+        mXiaoDetailTitleBarView.attachRecyclerView(mRv)
     }
 
     override fun initRecyclerView(): Boolean {
-//        mRv.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         mRv.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
         return true
     }
-
 
     override fun getItemListener(): SimpleItemListener<XiaoDetailDataModel> {
         return object : SimpleItemListener<XiaoDetailDataModel>() {
@@ -72,9 +75,8 @@ class XiaoDetailActivity : BaseCrawlerActivity<XiaoDetailDataModel>() {
         val imageView: ImageView = holder.getView(R.id.iv_image)
         val w = DimensionUtils.getScreenWidth(mContext)
         val h = w * (data.height.toFloat() / data.width.toFloat())
-        imageView.layoutParams.width = w
-        imageView.layoutParams.height = h.toInt()
-        Glide.with(mContext).load(data.standardPicUrl).override(w, h.toInt()).into(imageView)
+        holder.setLayoutParams(w, h.toInt())
+        IWantImageUtils.loadImg(mContext, data.standardPicUrl, w, h.toInt(), imageView)
     }
 
     override fun getLoadMoreListener(): OnLoadMoreListener {

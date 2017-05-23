@@ -30,7 +30,7 @@ class LoadingDialog(context: Context) : BaseDialog(context) {
     }
 
     override fun setWindowParams() {
-        buildDefaultParams(WRAP, WRAP, Gravity.CENTER)
+        buildDefaultParams(WRAP, WRAP,1f,0f, Gravity.CENTER)
     }
 
     override fun show() {

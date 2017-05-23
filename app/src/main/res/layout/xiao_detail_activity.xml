@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
+        android:overScrollMode="never"
+        android:paddingTop="50dp"
+        android:clipToPadding="false"
+        android:background="@color/white"
         android:id="@+id/clawler_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-</LinearLayout>
+
+    <com.march.dev.widget.TitleBarView
+        android:id="@+id/mXiaoDetailTitleBarView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+</FrameLayout>

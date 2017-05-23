@@ -7,6 +7,7 @@ import com.march.dev.uikit.SimpleWebViewActivity
 import com.march.dev.widget.TitleBarView
 import com.march.iwant.R
 import com.march.iwant.base.BaseCrawlerActivity
+import com.march.iwant.common.JsoupHelper
 import com.march.iwant.github.model.GitHubDataModel
 import com.march.iwant.github.model.GitHubSearchParam
 import com.march.lib.adapter.common.OnLoadMoreListener
@@ -92,7 +93,6 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubDataModel>() {
     @Throws(Exception::class)
     override fun crawler() {
         val url = generateUrl()
-        Logger.e(url)
         val document = Jsoup.connect(url).get()
         val liNoteList = document.getElementsByClass("col-12 d-block width-full py-4 border-bottom public source")
 
@@ -104,8 +104,8 @@ internal class GitHubSearchActivity : BaseCrawlerActivity<GitHubDataModel>() {
                 desc = pNodeList[0].text()
             }
             val lang = element.getElementsByClass("mr-3")[0].text()
-            val starNum = getTextIfExist(element.getElementsByAttributeValue("aria-label", "Stargazers"), "0")
-            val forkNum = getTextIfExist(element.getElementsByAttributeValue("aria-label", "Forks"), "0")
+            val starNum = JsoupHelper.getTextIfExist(element.getElementsByAttributeValue("aria-label", "Stargazers"), "0")
+            val forkNum = JsoupHelper.getTextIfExist(element.getElementsByAttributeValue("aria-label", "Forks"), "0")
             val time = element.getElementsByTag("relative-time").attr("datetime")
             val data = GitHubDataModel(aNode.text(), BASE_URL + aNode.attr("href"), desc, time, starNum, forkNum, lang)
             mDatas.add(data)
